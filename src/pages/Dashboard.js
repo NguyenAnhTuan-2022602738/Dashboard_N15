@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
-import Axios from "axios";
-import { Container, Typography, Box, Paper, Grid } from "@mui/material";
+import { fetchCarCountBySegment } from "../api/carApi";
+import { Container, Typography, Box, Paper, Grid, CircularProgress, Alert } from "@mui/material";
 import {
   BarChart,
   Bar,
@@ -33,20 +33,35 @@ const Dashboard = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await Axios.get("http://localhost:3000/api/car_items/count_by_segment");
-        setCarCountBySegment(response.data);
+        const data = await fetchCarCountBySegment(); // Gọi hàm API
+        setCarCountBySegment(data); // Lưu dữ liệu vào state
         setLoading(false);
       } catch (error) {
         setError("Error fetching data");
         setLoading(false);
       }
     };
-
+  
     fetchData();
   }, []);
 
-  if (loading) return <p>Loading...</p>;
-  if (error) return <Typography color="error">{error}</Typography>;
+  if (loading) {
+    return (
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          height: "100vh",
+        }}
+      >
+        <CircularProgress />
+      </div>
+    );
+  }
+  if (error) {
+    return <Alert severity="error">{error}</Alert>;
+  }
 
   // Dữ liệu cho biểu đồ radar
   const radarData = [

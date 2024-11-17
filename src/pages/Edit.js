@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom"; // Dùng để lấy ID từ URL
-import Axios from "axios";
+import { getCarDetail,updateCar } from "../api/carApi";
 import {
   Button,
   TextField,
@@ -221,16 +221,14 @@ const CarDetails = () => {
    useEffect(() => {
     const fetchCarDetails = async () => {
       try {
-        const response = await Axios.get(
-          `http://localhost:3000/api/car_items/detail/${id}`
-        );
-        setFormData(response.data); // Điền dữ liệu vào form
-        setImages(response.data.imageUrl || []); // Nếu có hình ảnh, điền vào
+        const carData = await getCarDetail(id); // Gọi hàm getCarDetail từ carApi.js
+        setFormData(carData); // Điền dữ liệu vào form
+        setImages(carData.imageUrl || []); // Nếu có hình ảnh, điền vào
       } catch (err) {
         setError("Không thể tải dữ liệu sản phẩm!");
       }
     };
-
+  
     fetchCarDetails();
   }, [id]);
 
@@ -256,30 +254,26 @@ const CarDetails = () => {
     event.preventDefault();
   
     try {
-      // Kiểm tra xem images có phải là mảng hợp lệ không
-      console.log('images:', images);
-      console.log('formData:', formData);
-
-      // Gửi yêu cầu PATCH để cập nhật sản phẩm
-      const response = await Axios.patch(`http://localhost:3000/api/car_items/edit/${id}`, {
-        ...formData,
-        imageUrl: images,  // Đảm bảo images là một mảng hợp lệ
-      });
+      // Debug dữ liệu trước khi gửi
+      console.log("images:", images);
+      console.log("formData:", formData);
+  
+      // Gọi API cập nhật sản phẩm
+      const response = await updateCar(id, formData, images);
   
       // Kiểm tra phản hồi từ API
       if (response.status === 200) {
         setSuccess("Cập nhật sản phẩm thành công!");
-        setError(null);  // Xóa bất kỳ thông báo lỗi nào trước đó
-        alert("Cập nhật sản phẩm thành công!");  // Hiển thị thông báo thành công
+        setError(null); // Xóa thông báo lỗi trước đó
+        alert("Cập nhật sản phẩm thành công!"); // Hiển thị thông báo thành công
   
-        // Tải lại trang để cập nhật dữ liệu (hoặc bạn có thể sử dụng state để cập nhật mà không cần tải lại trang)
-        window.location.reload();
+        window.location.reload(); // Reload lại trang
       }
     } catch (err) {
       setError("Có lỗi xảy ra khi cập nhật sản phẩm!");
-      setSuccess(null);  // Xóa thông báo thành công nếu có lỗi
+      setSuccess(null); // Xóa thông báo thành công nếu có lỗi
       alert("Có lỗi xảy ra khi cập nhật sản phẩm!");
-      console.error("Error during update:", err);  // In lỗi ra console để dễ dàng debug
+      console.error("Error during update:", err); // In lỗi ra console để debug
     }
   };
 

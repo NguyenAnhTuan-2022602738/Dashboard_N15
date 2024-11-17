@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import Axios from "axios";
+import { createCar } from "../api/carApi"; // Import hàm từ carApi.js
 import {
   Button,
   TextField,
@@ -236,10 +236,7 @@ const CarDetails = () => {
   const handleSubmit = async (event) => {
     event.preventDefault();
     try {
-      await Axios.post("http://localhost:3000/api/car_items/create", {
-        ...formData,
-        imageUrl: images.map((image) => image),
-      });
+      await createCar(formData, images); // Gọi hàm createCar
       setSuccess("Thêm sản phẩm thành công!");
       setError(null);
       // Reset form hoặc điều hướng đến trang khác nếu cần

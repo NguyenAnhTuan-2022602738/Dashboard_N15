@@ -19,7 +19,6 @@ import { useNavigate } from "react-router-dom";
 import Pagination from "@mui/material/Pagination";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faTrashCan } from "@fortawesome/free-solid-svg-icons";
 import { faMagnifyingGlass } from "@fortawesome/free-solid-svg-icons";
 import {
   fetchCarsDeleted,
@@ -144,7 +143,7 @@ const Deleted = () => {
       try {
         const result = await undoDeleteCar(id);
         alert(result.message);  // Hiển thị thông báo từ server
-  
+        
         // Cập nhật lại danh sách xe hoặc trạng thái UI sau khi hoàn tác thành công
         setCars(cars.map(car => {
           if (car._id === id) {
@@ -152,6 +151,8 @@ const Deleted = () => {
           }
           return car;
         }));
+
+        window.location.reload();
       } catch (error) {
         alert("Có lỗi xảy ra khi khôi phục xe!");
         console.error(error);
@@ -412,7 +413,6 @@ const Deleted = () => {
                         class="btn btn-success"
                         variant="contained"
                         onClick={() => handleUndoDelete(car._id)} // Gọi hàm handleUndoDelete khi nhấn nút
-                        disabled={!car.deleted}  // Chỉ hiển thị nút nếu xe đã bị xóa (deleted = true)
                         style={{ marginRight: "5px" }}
                     >
                         Hoàn tác

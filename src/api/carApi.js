@@ -86,7 +86,7 @@ export const deleteDB = async (id) => {
 
 export const undoDeleteCar = async (id) => {
   try {
-    const response = await fetch(`/api/car_items/undo-delete/${id}`, {
+    const response = await fetch(`${API_URL}/undo-delete/${id}`, {
       method: "PATCH",
     });
 
@@ -100,3 +100,44 @@ export const undoDeleteCar = async (id) => {
     throw new Error(err.message);
   }
 };
+
+/** api create car*/
+export const createCar = async (formData, images) => {
+  try {
+    const response = await Axios.post(`${API_URL}/create`, {
+      ...formData,
+      imageUrl: images.map((image) => image),
+    });
+    return response.data; // Dữ liệu trả về từ API (nếu có)
+  } catch (error) {
+    throw new Error("Failed to create car");
+  }
+};
+
+/**
+ * 
+ * @param {*} Api update car 
+ * @param {*} Use to update carinfo
+ * @returns 
+ */
+export const updateCar = async (id, formData, images) => {
+  try {
+    const response = await Axios.patch(`${API_URL}/edit/${id}`, {
+      ...formData,
+      imageUrl: images, // Đảm bảo images là mảng hợp lệ
+    });
+    return response; // Trả về phản hồi từ API
+  } catch (error) {
+    throw new Error("Failed to update car");
+  }
+};
+
+export const fetchCarCountBySegment = async () => {
+  try {
+    const response = await Axios.get(`${API_URL}/count_by_segment`);
+    return response.data; // Trả về dữ liệu từ API
+  } catch (error) {
+    throw new Error("Failed to fetch car count by segment");
+  }
+};
+
