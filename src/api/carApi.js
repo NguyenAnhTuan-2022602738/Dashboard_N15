@@ -1,7 +1,7 @@
 // src/api/carApi.js
 import Axios from "axios";
 
-const API_URL = "http://localhost:3000/api/car_items";
+const API_URL = "https://btl-ptpmhdv-nhom-15.vercel.app/api/car_items";
 
 export const fetchCars = async (page, sortKey, sortValue) => {
   try {

@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import Axios from "axios";
 import {
   Container,
   Typography,
@@ -7,9 +6,6 @@ import {
   Alert,
   Grid,
   Paper,
-  Box,
-  Button,
-  Checkbox,
 } from "@mui/material";
 import {
   LineChart,
@@ -26,11 +22,7 @@ import {
   Cell,
   Tooltip as PieTooltip,
 } from "recharts";
-
-import Table from "@mui/material/Table";
-import TableRow from "@mui/material/TableRow";
-import TableCell from "@mui/material/TableCell";
-import { fetchCars } from "../api/carApi";
+import { fetchCarCountBySegment } from "../api/carApi";
 
 const colors = [
   "#FF6F61", "#4CAF50", "#2196F3", "#FFEB3B", "#9C27B0",
@@ -47,30 +39,17 @@ const Dashboard = () => {
 
   // Load car data by segment
   useEffect(() => {
-    const fetchCarCountBySegment = async () => {
+    const loadCarData = async () => {
       try {
-        const response = await Axios.get("http://localhost:3000/api/car_items/count_by_segment");
-        setCarData(response.data);
+        const data = await fetchCarCountBySegment();
+        setCarData(data);
       } catch (error) {
         setError("Không thể tải dữ liệu.");
       } finally {
         setLoading(false);
       }
     };
-    fetchCarCountBySegment();
-  }, []);
-
-  // Load car list
-  useEffect(() => {
-    const loadCars = async () => {
-      try {
-        const carData = await fetchCars(1, "price", "asc");
-        setCars(carData.cars || []);
-      } catch (error) {
-        console.error("Error fetching cars:", error);
-      }
-    };
-    loadCars();
+    loadCarData();
   }, []);
 
   const totalCarCount = carData.reduce((sum, segment) => sum + segment.count, 0);
