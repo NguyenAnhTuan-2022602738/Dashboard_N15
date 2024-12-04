@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { createCar } from "../api/carApi"; // Import hàm từ carApi.js
+import { createCar, importCarData } from "../api/carApi"; // Import hàm từ carApi.js
 import {
   Button,
   TextField,
@@ -13,8 +13,11 @@ import {
   Grid,
   FormControlLabel,
   Checkbox,
-  Switch
+  Switch,
+  Modal
 } from "@mui/material";
+import "bootstrap/dist/css/bootstrap.min.css";
+import "../styles/Create.css";
 
 const CarDetails = () => {
   const [formData, setFormData] = useState({
@@ -214,6 +217,8 @@ const CarDetails = () => {
   const [images, setImages] = useState([]);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
+  const [open, setOpen] = useState(false);
+  const [jsonData, setJsonData] = useState([]);
 
   const handleChange = (event) => {
     const { name, value, type, checked } = event.target;
@@ -255,14 +260,229 @@ const CarDetails = () => {
     }
   };
 
+  const handleFileSubmit = async () => {
+    try {
+      const result = await importCarData(jsonData);
+      if (result.code === 200) {
+        setSuccess("Import file thành công!");
+        setError(null);
+      } else {
+        setError(result.message);
+        setSuccess(null);
+      }
+    } catch (error) {
+      setError(error.message);
+      setSuccess(null);
+    }
+  };
+
+  const handleFileUpload = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = (event) => {
+            try {
+                const data = JSON.parse(event.target.result);
+                setJsonData(
+                    data.map((item) => ({
+                        // Thông số cơ bản
+                        name: item.name || "Đang cập nhật",
+                        description: item.description || "Đang cập nhật",
+                        brand: item.brand || "Đang cập nhật",
+                        version: item.version || "Đang cập nhật",
+                        vehicle_segment: item.vehicle_segment || "Đang cập nhật",
+                        engine: item.engine || "Đang cập nhật",
+                        price: item.price || "Đang cập nhật",
+                        imageUrl: item.imageUrl || [],
+
+                        // Động cơ/hộp số
+                        kieuDongCo: item.kieuDongCo || "Đang cập nhật",
+                        dungTich: item.dungTich || "Đang cập nhật",
+                        congSuat: item.congSuat || "Đang cập nhật",
+                        momenXoan: item.momenXoan || "Đang cập nhật",
+                        hopso: item.hopso || "Đang cập nhật",
+                        heDanDong: item.heDanDong || "Đang cập nhật",
+                        loaiNhienLieu: item.loaiNhienLieu || "Đang cập nhật",
+                        mucTieuThuNhienLieu: item.mucTieuThuNhienLieu || "Đang cập nhật",
+
+                        // Kích thước/Trọng lượng
+                        soCho: item.soCho || "Đang cập nhật",
+                        kichThuoc: item.kichThuoc || "Đang cập nhật",
+                        chieuDaiCoSo: item.chieuDaiCoSo || "Đang cập nhật",
+                        khoangSangGam: item.khoangSangGam || "Đang cập nhật",
+                        banKinhVongQuay: item.banKinhVongQuay || "Đang cập nhật",
+                        theTichKhoangHanhLy: item.theTichKhoangHanhLy || "Đang cập nhật",
+                        dungTichBinhNhienLieu: item.dungTichBinhNhienLieu || "Đang cập nhật",
+                        trongLuongBanThan: item.trongLuongBanThan || "Đang cập nhật",
+                        trongLuongToanTai: item.trongLuongToanTai || "Đang cập nhật",
+                        lop_lazang: item.lop_lazang || "Đang cập nhật",
+
+                        // Hệ thống treo/phanh
+                        treoTruoc: item.treoTruoc || "Đang cập nhật",
+                        treoSau: item.treoSau || "Đang cập nhật",
+                        phanhTruoc: item.phanhTruoc || "Đang cập nhật",
+                        phanhSau: item.phanhSau || "Đang cập nhật",
+
+                        // Ngoại thất
+                        denPhanhTrenCao: item.denPhanhTrenCao || "Đang cập nhật",
+                        guongChieuHau: item.guongChieuHau || "Đang cập nhật",
+                        sayGuongChieuHau: item.sayGuongChieuHau || "Đang cập nhật",
+                        gatMuaTuDong: item.gatMuaTuDong || "Đang cập nhật",
+                        denChieuXa: item.denChieuXa || "Đang cập nhật",
+                        denChieuGan: item.denChieuGan || "Đang cập nhật",
+                        denBanNgay: item.denBanNgay || "Đang cập nhật",
+                        denPhaTuDongBat_Tat: item.denPhaTuDongBat_Tat || "Đang cập nhật",
+                        denPhaTuDongXa_Gan: item.denPhaTuDongXa_Gan || "Đang cập nhật",
+                        denPhaTuDongDieuChinhGocChieu: item.denPhaTuDongDieuChinhGocChieu || "Đang cập nhật",
+                        denHau: item.denHau || "Đang cập nhật",
+                        angTenVayCa: item.angTenVayCa || "Đang cập nhật",
+                        copDong_MoDien: item.copDong_MoDien || "Đang cập nhật",
+                        moCopRanhTay: item.moCopRanhTay || "Đang cập nhật",
+
+                        // Nội thất
+                        chatLieuBocGhe: item.chatLieuBocGhe || "Đang cập nhật",
+                        dieuChinhGheLai: item.dieuChinhGheLai || "Đang cập nhật",
+                        nhoViTriGheLai: item.nhoViTriGheLai || "Đang cập nhật",
+                        massageGheLai: item.massageGheLai || "Đang cập nhật",
+                        dieuChinhGhePhu: item.dieuChinhGhePhu || "Đang cập nhật",
+                        massageGhePhu: item.massageGhePhu || "Đang cập nhật",
+                        thongGioGheLai: item.thongGioGheLai || "Đang cập nhật",
+                        thongGioGhePhu: item.thongGioGhePhu || "Đang cập nhật",
+                        suoiAmGheLai: item.suoiAmGheLai || "Đang cập nhật",
+                        suoiAmGhePhu: item.suoiAmGhePhu || "Đang cập nhật",
+                        bangDongHoTaiXe: item.bangDongHoTaiXe || "Đang cập nhật",
+                        nutBamTichHopTrenVolang: item.nutBamTichHopTrenVolang || "Đang cập nhật",
+                        chatLieuBocVoLang: item.chatLieuBocVoLang || "Đang cập nhật",
+                        chiaKhoaThongMinh: item.chiaKhoaThongMinh || "Đang cập nhật",
+                        khoiDongNutBam: item.khoiDongNutBam || "Đang cập nhật",
+                        dieuHoa: item.dieuHoa || "Đang cập nhật",
+                        cuaGioHangGheSau: item.cuaGioHangGheSau || "Đang cập nhật",
+                        cuaKinhMotCham: item.cuaKinhMotCham || "Đang cập nhật",
+                        cuaSoTroi: item.cuaSoTroi || "Đang cập nhật",
+                        cuaSoTroiToanCanh: item.cuaSoTroiToanCanh || "Đang cập nhật",
+                        guongChieuHauTrongXeChongChoiTuDong: item.guongChieuHauTrongXeChongChoiTuDong || "Đang cập nhật",
+                        tuaTayHangGheTruoc: item.tuaTayHangGheTruoc || "Đang cập nhật",
+                        tuaTayHangGheSau: item.tuaTayHangGheSau || "Đang cập nhật",
+                        manHinhGiaiTri: item.manHinhGiaiTri || "Đang cập nhật",
+                        ketNoiAppleCarPlay: item.ketNoiAppleCarPlay || "Đang cập nhật",
+                        ketNoiAndroidAuto: item.ketNoiAndroidAuto || "Đang cập nhật",
+                        raLenhGiongNoi: item.raLenhGiongNoi || "Đang cập nhật",
+                        damThoaiRanhTay: item.damThoaiRanhTay || "Đang cập nhật",
+                        heThongLoa: item.heThongLoa || "Đang cập nhật",
+                        phatWifi: item.phatWifi || "Đang cập nhật",
+                        ketNoiAUX: item.ketNoiAUX || "Đang cập nhật",
+                        ketNoiUSB: item.ketNoiUSB || "Đang cập nhật",
+                        ketNoiBluetooth: item.ketNoiBluetooth || "Đang cập nhật",
+                        radioAM_FM: item.radioAM_FM || "Đang cập nhật",
+                        sacKhongDay: item.sacKhongDay || "Đang cập nhật",
+
+                        // Hỗ trợ vận hành
+                        troLucVoLang: item.troLucVoLang || "Đang cập nhật",
+                        nhieuCheDoLai: item.nhieuCheDoLai || "Đang cập nhật",
+                        layChuyenSoTrenVoLang: item.layChuyenSoTrenVoLang || "Đang cập nhật",
+                        kiemSoatGiaToc: item.kiemSoatGiaToc || "Đang cập nhật",
+                        phanhTayDienTu: item.phanhTayDienTu || "Đang cập nhật",
+                        giuPhanhTuDong: item.giuPhanhTuDong || "Đang cập nhật",
+
+                        // Công nghệ an toàn
+                        kiemSoatHanhTrinh: item.kiemSoatHanhTrinh || "Đang cập nhật",
+                        kiemSoatHanhTrinhThichUng: item.kiemSoatHanhTrinhThichUng || "Đang cập nhật",
+                        canhBaoPhuongTienCatNgangKhiLui: item.canhBaoPhuongTienCatNgangKhiLui || "Đang cập nhật",
+                        canhBaoTaiXeBuonNgu: item.canhBaoTaiXeBuonNgu || "Đang cập nhật",
+                        mocGheAnToanChoTreEmIsofix: item.mocGheAnToanChoTreEmIsofix || "Đang cập nhật",
+                        hoTroDoDeo: item.hoTroDoDeo || "Đang cập nhật",
+                        canhBaoDiemMu: item.canhBaoDiemMu || "Đang cập nhật",
+                        camBienLui: item.camBienLui || "Đang cập nhật",
+                        cameraLui: item.cameraLui || "Đang cập nhật",
+                        camera360: item.camera360 || "Đang cập nhật",
+                        cameraQuanSatLanDuong: item.cameraQuanSatLanDuong || "Đang cập nhật",
+                        canhBaoChechLanDuong: item.canhBaoChechLanDuong || "Đang cập nhật",
+                        hoTroGiuLan: item.hoTroGiuLan || "Đang cập nhật",
+                        hoTroPhanhTuDongGiamThieuVaCham: item.hoTroPhanhTuDongGiamThieuVaCham || "Đang cập nhật",
+                        phanPhoiLucPhanhDienTu: item.phanPhoiLucPhanhDienTu || "Đang cập nhật",
+                        canBangDienTu: item.canBangDienTu || "Đang cập nhật",
+                        kiemSoatLucKeo: item.kiemSoatLucKeo || "Đang cập nhật",
+                        hoTroKhoiHanhNgangDoc: item.hoTroKhoiHanhNgangDoc || "Đang cập nhật",
+                        soTuiKhi: item.soTuiKhi || "Đang cập nhật",
+                        chongBoCungPhanh: item.chongBoCungPhanh || "Đang cập nhật",
+                        hoTroLucPhanhKhanCap: item.hoTroLucPhanhKhanCap || "Đang cập nhật",
+                    }))
+                );
+            } catch (err) {
+                console.error("JSON không hợp lệ:", err.message);
+            }
+        };
+        reader.readAsText(file);
+    }
+};
+
+
   return (
     <Container className="mt-4">
-      <h2>Thông số kỹ thuật xe</h2>
+      <div className="box-title">
+        <h2>Thông số kỹ thuật xe</h2>
+        <div>
+          <Button
+            className="btn btn-outline-success"
+            variant="contained"
+            onClick={() => setOpen(true)}
+          >
+            Thêm xe từ file JSON
+          </Button>
+          <Modal open={open} onClose={() => setOpen(false)}>
+            <Box
+              sx={{
+                position: "absolute",
+                top: "50%",
+                left: "50%",
+                transform: "translate(-50%, -50%)",
+                width: 400,
+                bgcolor: "background.paper",
+                boxShadow: 24,
+                p: 4,
+              }}
+            >
+              <Typography variant="h6" component="h2">
+                Tải file JSON
+              </Typography>
+              <TextField
+                type="file"
+                inputProps={{ accept: "application/json" }}
+                fullWidth
+                onChange={handleFileUpload}
+                sx={{ my: 2 }}
+              />
+              {jsonData.length > 0 && (
+                <div>
+                  <Typography variant="body1">Xem trước dữ liệu:</Typography>
+                  <ul>
+                    {jsonData.map((car, index) => (
+                      <li key={index}>
+                        {car.name} - {car.brand}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+              <Button
+                variant="contained"
+                color="success"
+                fullWidth
+                onClick={() => {
+                  handleFileSubmit();
+                  setOpen(false);
+                }}
+              >
+                Xác nhận
+              </Button>
+            </Box>
+          </Modal>
+        </div>
+      </div>
       {error && <Alert severity="error">{error}</Alert>}
       {success && <Alert severity="success">{success}</Alert>}
 
       <form onSubmit={handleSubmit}>
-
         <Box sx={{ mb: 2 }}>
           <TextField
             label="Tên xe"
@@ -572,7 +792,7 @@ const CarDetails = () => {
           </Grid>
         </Box>
 
-        <Box sx={{ mb: 2, display: 'flex', alignItems: 'center' }}>
+        <Box sx={{ mb: 2, display: "flex", alignItems: "center" }}>
           <TextField
             label="Treo trước"
             variant="outlined"
@@ -596,7 +816,7 @@ const CarDetails = () => {
         </Box>
 
         {/* Treo sau */}
-        <Box sx={{ mb: 2, display: 'flex', alignItems: 'center' }}>
+        <Box sx={{ mb: 2, display: "flex", alignItems: "center" }}>
           <TextField
             label="Treo sau"
             variant="outlined"
@@ -620,7 +840,7 @@ const CarDetails = () => {
         </Box>
 
         {/* Phanh trước */}
-        <Box sx={{ mb: 2, display: 'flex', alignItems: 'center' }}>
+        <Box sx={{ mb: 2, display: "flex", alignItems: "center" }}>
           <TextField
             label="Phanh trước"
             variant="outlined"
@@ -644,7 +864,7 @@ const CarDetails = () => {
         </Box>
 
         {/* Phanh sau */}
-        <Box sx={{ mb: 2, display: 'flex', alignItems: 'center' }}>
+        <Box sx={{ mb: 2, display: "flex", alignItems: "center" }}>
           <TextField
             label="Phanh sau"
             variant="outlined"
@@ -666,7 +886,7 @@ const CarDetails = () => {
             sx={{ ml: 2 }} // Margin to the left
           />
         </Box>
-        <Box sx={{ mb: 2, display: 'flex', alignItems: 'center' }}>
+        <Box sx={{ mb: 2, display: "flex", alignItems: "center" }}>
           <TextField
             label="Đèn phanh trên cao"
             variant="outlined"
@@ -690,7 +910,7 @@ const CarDetails = () => {
         </Box>
 
         {/* Gương chiếu hậu */}
-        <Box sx={{ mb: 2, display: 'flex', alignItems: 'center' }}>
+        <Box sx={{ mb: 2, display: "flex", alignItems: "center" }}>
           <TextField
             label="Gương chiếu hậu"
             variant="outlined"
@@ -714,10 +934,10 @@ const CarDetails = () => {
         </Box>
 
         <Typography variant="h4" gutterBottom>
-        Thông số kỹ thuật - Ngoại thất
+          Thông số kỹ thuật - Ngoại thất
         </Typography>
         {/* Sấy gương chiếu hậu */}
-        <Box sx={{ mb: 2, display: 'flex', alignItems: 'center' }}>
+        <Box sx={{ mb: 2, display: "flex", alignItems: "center" }}>
           <TextField
             label="Sấy gương chiếu hậu"
             variant="outlined"
@@ -741,7 +961,7 @@ const CarDetails = () => {
         </Box>
 
         {/* Gạt mưa tự động */}
-        <Box sx={{ mb: 2, display: 'flex', alignItems: 'center' }}>
+        <Box sx={{ mb: 2, display: "flex", alignItems: "center" }}>
           <TextField
             label="Gạt mưa tự động"
             variant="outlined"
@@ -765,7 +985,7 @@ const CarDetails = () => {
         </Box>
 
         {/* Đèn chiếu xa */}
-        <Box sx={{ mb: 2, display: 'flex', alignItems: 'center' }}>
+        <Box sx={{ mb: 2, display: "flex", alignItems: "center" }}>
           <TextField
             label="Đèn chiếu xa"
             variant="outlined"
@@ -789,7 +1009,7 @@ const CarDetails = () => {
         </Box>
 
         {/* Đèn chiếu gần */}
-        <Box sx={{ mb: 2, display: 'flex', alignItems: 'center' }}>
+        <Box sx={{ mb: 2, display: "flex", alignItems: "center" }}>
           <TextField
             label="Đèn chiếu gần"
             variant="outlined"
@@ -813,7 +1033,7 @@ const CarDetails = () => {
         </Box>
 
         {/* Đèn ban ngày */}
-        <Box sx={{ mb: 2, display: 'flex', alignItems: 'center' }}>
+        <Box sx={{ mb: 2, display: "flex", alignItems: "center" }}>
           <TextField
             label="Đèn ban ngày"
             variant="outlined"
@@ -837,7 +1057,7 @@ const CarDetails = () => {
         </Box>
 
         {/* Đèn pha tự động bật/tắt */}
-        <Box sx={{ mb: 2, display: 'flex', alignItems: 'center' }}>
+        <Box sx={{ mb: 2, display: "flex", alignItems: "center" }}>
           <TextField
             label="Đèn pha tự động bật/tắt"
             variant="outlined"
@@ -861,7 +1081,7 @@ const CarDetails = () => {
         </Box>
 
         {/* Đèn pha tự động xa/gần */}
-        <Box sx={{ mb: 2, display: 'flex', alignItems: 'center' }}>
+        <Box sx={{ mb: 2, display: "flex", alignItems: "center" }}>
           <TextField
             label="Đèn pha tự động xa/gần"
             variant="outlined"
@@ -885,7 +1105,7 @@ const CarDetails = () => {
         </Box>
 
         {/* Đèn pha tự động điều chỉnh góc chiếu */}
-        <Box sx={{ mb: 2, display: 'flex', alignItems: 'center' }}>
+        <Box sx={{ mb: 2, display: "flex", alignItems: "center" }}>
           <TextField
             label="Đèn pha tự động điều chỉnh góc chiếu"
             variant="outlined"
@@ -909,7 +1129,7 @@ const CarDetails = () => {
         </Box>
 
         {/* Đèn hậu */}
-        <Box sx={{ mb: 2, display: 'flex', alignItems: 'center' }}>
+        <Box sx={{ mb: 2, display: "flex", alignItems: "center" }}>
           <TextField
             label="Đèn hậu"
             variant="outlined"
@@ -933,7 +1153,7 @@ const CarDetails = () => {
         </Box>
 
         {/* Ăng-ten vây cá */}
-        <Box sx={{ mb: 2, display: 'flex', alignItems: 'center' }}>
+        <Box sx={{ mb: 2, display: "flex", alignItems: "center" }}>
           <TextField
             label="Ăng-ten vây cá"
             variant="outlined"
@@ -957,7 +1177,7 @@ const CarDetails = () => {
         </Box>
 
         {/* Cốp động/mở điện */}
-        <Box sx={{ mb: 2, display: 'flex', alignItems: 'center' }}>
+        <Box sx={{ mb: 2, display: "flex", alignItems: "center" }}>
           <TextField
             label="Cốp động/mở điện"
             variant="outlined"
@@ -981,7 +1201,7 @@ const CarDetails = () => {
         </Box>
 
         {/* Mở cốp rảnh tay */}
-        <Box sx={{ mb: 2, display: 'flex', alignItems: 'center' }}>
+        <Box sx={{ mb: 2, display: "flex", alignItems: "center" }}>
           <TextField
             label="Mở cốp rảnh tay"
             variant="outlined"
@@ -1005,10 +1225,10 @@ const CarDetails = () => {
         </Box>
 
         <Typography variant="h4" gutterBottom>
-        Thông số kỹ thuật - Nội thất
+          Thông số kỹ thuật - Nội thất
         </Typography>
         {/* Chất liệu bọc ghế */}
-        <Box sx={{ mb: 2, display: 'flex', alignItems: 'center' }}>
+        <Box sx={{ mb: 2, display: "flex", alignItems: "center" }}>
           <TextField
             label="Chất liệu bọc ghế"
             variant="outlined"
@@ -1032,7 +1252,7 @@ const CarDetails = () => {
         </Box>
 
         {/* Điều chỉnh ghế lái */}
-        <Box sx={{ mb: 2, display: 'flex', alignItems: 'center' }}>
+        <Box sx={{ mb: 2, display: "flex", alignItems: "center" }}>
           <TextField
             label="Điều chỉnh ghế lái"
             variant="outlined"
@@ -1056,7 +1276,7 @@ const CarDetails = () => {
         </Box>
 
         {/* Nhớ vị trí ghế lái */}
-        <Box sx={{ mb: 2, display: 'flex', alignItems: 'center' }}>
+        <Box sx={{ mb: 2, display: "flex", alignItems: "center" }}>
           <TextField
             label="Nhớ vị trí ghế lái"
             variant="outlined"
@@ -1080,7 +1300,7 @@ const CarDetails = () => {
         </Box>
 
         {/* Massage ghế lái */}
-        <Box sx={{ mb: 2, display: 'flex', alignItems: 'center' }}>
+        <Box sx={{ mb: 2, display: "flex", alignItems: "center" }}>
           <TextField
             label="Massage ghế lái"
             variant="outlined"
@@ -1104,7 +1324,7 @@ const CarDetails = () => {
         </Box>
 
         {/* Điều chỉnh ghế phụ */}
-        <Box sx={{ mb: 2, display: 'flex', alignItems: 'center' }}>
+        <Box sx={{ mb: 2, display: "flex", alignItems: "center" }}>
           <TextField
             label="Điều chỉnh ghế phụ"
             variant="outlined"
@@ -1128,7 +1348,7 @@ const CarDetails = () => {
         </Box>
 
         {/* Massage ghế phụ */}
-        <Box sx={{ mb: 2, display: 'flex', alignItems: 'center' }}>
+        <Box sx={{ mb: 2, display: "flex", alignItems: "center" }}>
           <TextField
             label="Massage ghế phụ"
             variant="outlined"
@@ -1152,7 +1372,7 @@ const CarDetails = () => {
         </Box>
 
         {/* Thông gió ghế lái */}
-        <Box sx={{ mb: 2, display: 'flex', alignItems: 'center' }}>
+        <Box sx={{ mb: 2, display: "flex", alignItems: "center" }}>
           <TextField
             label="Thông gió ghế lái"
             variant="outlined"
@@ -1176,7 +1396,7 @@ const CarDetails = () => {
         </Box>
 
         {/* Thông gió ghế phụ */}
-        <Box sx={{ mb: 2, display: 'flex', alignItems: 'center' }}>
+        <Box sx={{ mb: 2, display: "flex", alignItems: "center" }}>
           <TextField
             label="Thông gió ghế phụ"
             variant="outlined"
@@ -1200,7 +1420,7 @@ const CarDetails = () => {
         </Box>
 
         {/* Sưởi ấm ghế lái */}
-        <Box sx={{ mb: 2, display: 'flex', alignItems: 'center' }}>
+        <Box sx={{ mb: 2, display: "flex", alignItems: "center" }}>
           <TextField
             label="Sưởi ấm ghế lái"
             variant="outlined"
@@ -1224,7 +1444,7 @@ const CarDetails = () => {
         </Box>
 
         {/* Sưởi ấm ghế phụ */}
-        <Box sx={{ mb: 2, display: 'flex', alignItems: 'center' }}>
+        <Box sx={{ mb: 2, display: "flex", alignItems: "center" }}>
           <TextField
             label="Sưởi ấm ghế phụ"
             variant="outlined"
@@ -1248,7 +1468,7 @@ const CarDetails = () => {
         </Box>
 
         {/* Bảng đồng hồ tài xế */}
-        <Box sx={{ mb: 2, display: 'flex', alignItems: 'center' }}>
+        <Box sx={{ mb: 2, display: "flex", alignItems: "center" }}>
           <TextField
             label="Bảng đồng hồ tài xế"
             variant="outlined"
@@ -1272,7 +1492,7 @@ const CarDetails = () => {
         </Box>
 
         {/* Nút bấm tích hợp trên vô lăng */}
-        <Box sx={{ mb: 2, display: 'flex', alignItems: 'center' }}>
+        <Box sx={{ mb: 2, display: "flex", alignItems: "center" }}>
           <TextField
             label="Nút bấm tích hợp trên vô lăng"
             variant="outlined"
@@ -1296,7 +1516,7 @@ const CarDetails = () => {
         </Box>
 
         {/* Chất liệu bọc vô lăng */}
-        <Box sx={{ mb: 2, display: 'flex', alignItems: 'center' }}>
+        <Box sx={{ mb: 2, display: "flex", alignItems: "center" }}>
           <TextField
             label="Chất liệu bọc vô lăng"
             variant="outlined"
@@ -1320,7 +1540,7 @@ const CarDetails = () => {
         </Box>
 
         {/* Chìa khóa thông minh */}
-        <Box sx={{ mb: 2, display: 'flex', alignItems: 'center' }}>
+        <Box sx={{ mb: 2, display: "flex", alignItems: "center" }}>
           <TextField
             label="Chìa khóa thông minh"
             variant="outlined"
@@ -1344,7 +1564,7 @@ const CarDetails = () => {
         </Box>
 
         {/* Khởi động nút bấm */}
-        <Box sx={{ mb: 2, display: 'flex', alignItems: 'center' }}>
+        <Box sx={{ mb: 2, display: "flex", alignItems: "center" }}>
           <TextField
             label="Khởi động nút bấm"
             variant="outlined"
@@ -1368,7 +1588,7 @@ const CarDetails = () => {
         </Box>
 
         {/* Điều hòa */}
-        <Box sx={{ mb: 2, display: 'flex', alignItems: 'center' }}>
+        <Box sx={{ mb: 2, display: "flex", alignItems: "center" }}>
           <TextField
             label="Điều hòa"
             variant="outlined"
@@ -1392,7 +1612,7 @@ const CarDetails = () => {
         </Box>
 
         {/* Cửa gió hạng ghế sau */}
-        <Box sx={{ mb: 2, display: 'flex', alignItems: 'center' }}>
+        <Box sx={{ mb: 2, display: "flex", alignItems: "center" }}>
           <TextField
             label="Cửa gió hàng ghế sau"
             variant="outlined"
@@ -1416,7 +1636,7 @@ const CarDetails = () => {
         </Box>
 
         {/* Cửa kính một chạm */}
-        <Box sx={{ mb: 2, display: 'flex', alignItems: 'center' }}>
+        <Box sx={{ mb: 2, display: "flex", alignItems: "center" }}>
           <TextField
             label="Cửa kính một chạm"
             variant="outlined"
@@ -1440,7 +1660,7 @@ const CarDetails = () => {
         </Box>
 
         {/* Cửa sổ trời */}
-        <Box sx={{ mb: 2, display: 'flex', alignItems: 'center' }}>
+        <Box sx={{ mb: 2, display: "flex", alignItems: "center" }}>
           <TextField
             label="Cửa sổ trời"
             variant="outlined"
@@ -1464,7 +1684,7 @@ const CarDetails = () => {
         </Box>
 
         {/* Cửa sổ trời toàn cảnh */}
-        <Box sx={{ mb: 2, display: 'flex', alignItems: 'center' }}>
+        <Box sx={{ mb: 2, display: "flex", alignItems: "center" }}>
           <TextField
             label="Cửa sổ trời toàn cảnh"
             variant="outlined"
@@ -1488,7 +1708,7 @@ const CarDetails = () => {
         </Box>
 
         {/* Gương chiếu hậu trong xe chống chói tự động */}
-        <Box sx={{ mb: 2, display: 'flex', alignItems: 'center' }}>
+        <Box sx={{ mb: 2, display: "flex", alignItems: "center" }}>
           <TextField
             label="Gương chiếu hậu trong xe chống chói tự động"
             variant="outlined"
@@ -1512,7 +1732,7 @@ const CarDetails = () => {
         </Box>
 
         {/* Tựa tay hàng ghế trước */}
-        <Box sx={{ mb: 2, display: 'flex', alignItems: 'center' }}>
+        <Box sx={{ mb: 2, display: "flex", alignItems: "center" }}>
           <TextField
             label="Tựa tay hàng ghế trước"
             variant="outlined"
@@ -1536,7 +1756,7 @@ const CarDetails = () => {
         </Box>
 
         {/* Tựa tay hàng ghế sau */}
-        <Box sx={{ mb: 2, display: 'flex', alignItems: 'center' }}>
+        <Box sx={{ mb: 2, display: "flex", alignItems: "center" }}>
           <TextField
             label="Tựa tay hàng ghế sau"
             variant="outlined"
@@ -1560,7 +1780,7 @@ const CarDetails = () => {
         </Box>
 
         {/* Màn hình giải trí */}
-        <Box sx={{ mb: 2, display: 'flex', alignItems: 'center' }}>
+        <Box sx={{ mb: 2, display: "flex", alignItems: "center" }}>
           <TextField
             label="Màn hình giải trí"
             variant="outlined"
@@ -1584,7 +1804,7 @@ const CarDetails = () => {
         </Box>
 
         {/* Kết nối Apple CarPlay */}
-        <Box sx={{ mb: 2, display: 'flex', alignItems: 'center' }}>
+        <Box sx={{ mb: 2, display: "flex", alignItems: "center" }}>
           <TextField
             label="Kết nối Apple CarPlay"
             variant="outlined"
@@ -1608,7 +1828,7 @@ const CarDetails = () => {
         </Box>
 
         {/* Kết nối Android Auto */}
-        <Box sx={{ mb: 2, display: 'flex', alignItems: 'center' }}>
+        <Box sx={{ mb: 2, display: "flex", alignItems: "center" }}>
           <TextField
             label="Kết nối Android Auto"
             variant="outlined"
@@ -1632,7 +1852,7 @@ const CarDetails = () => {
         </Box>
 
         {/* Ra lệnh giọng nói */}
-        <Box sx={{ mb: 2, display: 'flex', alignItems: 'center' }}>
+        <Box sx={{ mb: 2, display: "flex", alignItems: "center" }}>
           <TextField
             label="Ra lệnh giọng nói"
             variant="outlined"
@@ -1656,7 +1876,7 @@ const CarDetails = () => {
         </Box>
 
         {/* Đàm thoại rảnh tay */}
-        <Box sx={{ mb: 2, display: 'flex', alignItems: 'center' }}>
+        <Box sx={{ mb: 2, display: "flex", alignItems: "center" }}>
           <TextField
             label="Đàm thoại rảnh tay"
             variant="outlined"
@@ -1680,7 +1900,7 @@ const CarDetails = () => {
         </Box>
 
         {/* Hệ thống loa */}
-        <Box sx={{ mb: 2, display: 'flex', alignItems: 'center' }}>
+        <Box sx={{ mb: 2, display: "flex", alignItems: "center" }}>
           <TextField
             label="Hệ thống loa"
             variant="outlined"
@@ -1704,7 +1924,7 @@ const CarDetails = () => {
         </Box>
 
         {/* Phát Wifi */}
-        <Box sx={{ mb: 2, display: 'flex', alignItems: 'center' }}>
+        <Box sx={{ mb: 2, display: "flex", alignItems: "center" }}>
           <TextField
             label="Phát Wifi"
             variant="outlined"
@@ -1728,7 +1948,7 @@ const CarDetails = () => {
         </Box>
 
         {/* Kết nối AUX */}
-        <Box sx={{ mb: 2, display: 'flex', alignItems: 'center' }}>
+        <Box sx={{ mb: 2, display: "flex", alignItems: "center" }}>
           <TextField
             label="Kết nối AUX"
             variant="outlined"
@@ -1752,7 +1972,7 @@ const CarDetails = () => {
         </Box>
 
         {/* Kết nối USB */}
-        <Box sx={{ mb: 2, display: 'flex', alignItems: 'center' }}>
+        <Box sx={{ mb: 2, display: "flex", alignItems: "center" }}>
           <TextField
             label="Kết nối USB"
             variant="outlined"
@@ -1776,7 +1996,7 @@ const CarDetails = () => {
         </Box>
 
         {/* Kết nối Bluetooth */}
-        <Box sx={{ mb: 2, display: 'flex', alignItems: 'center' }}>
+        <Box sx={{ mb: 2, display: "flex", alignItems: "center" }}>
           <TextField
             label="Kết nối Bluetooth"
             variant="outlined"
@@ -1800,7 +2020,7 @@ const CarDetails = () => {
         </Box>
 
         {/* Radio AM/FM */}
-        <Box sx={{ mb: 2, display: 'flex', alignItems: 'center' }}>
+        <Box sx={{ mb: 2, display: "flex", alignItems: "center" }}>
           <TextField
             label="Radio AM/FM"
             variant="outlined"
@@ -1824,7 +2044,7 @@ const CarDetails = () => {
         </Box>
 
         {/* Sạc không dây */}
-        <Box sx={{ mb: 2, display: 'flex', alignItems: 'center' }}>
+        <Box sx={{ mb: 2, display: "flex", alignItems: "center" }}>
           <TextField
             label="Sạc không dây"
             variant="outlined"
@@ -1846,12 +2066,12 @@ const CarDetails = () => {
             sx={{ ml: 2 }} // Margin to the left
           />
         </Box>
-        
+
         <Typography variant="h4" gutterBottom>
-        Thông số kỹ thuật - Hỗ trợ vận hành
+          Thông số kỹ thuật - Hỗ trợ vận hành
         </Typography>
         {/* Trợ lực vô lăng */}
-        <Box sx={{ mb: 2, display: 'flex', alignItems: 'center' }}>
+        <Box sx={{ mb: 2, display: "flex", alignItems: "center" }}>
           <TextField
             label="Trợ lực vô lăng"
             variant="outlined"
@@ -1875,7 +2095,7 @@ const CarDetails = () => {
         </Box>
 
         {/* Nhiều chế độ lái */}
-        <Box sx={{ mb: 2, display: 'flex', alignItems: 'center' }}>
+        <Box sx={{ mb: 2, display: "flex", alignItems: "center" }}>
           <TextField
             label="Nhiều chế độ lái"
             variant="outlined"
@@ -1899,7 +2119,7 @@ const CarDetails = () => {
         </Box>
 
         {/* Lẫy chuyển số trên vô lăng */}
-        <Box sx={{ mb: 2, display: 'flex', alignItems: 'center' }}>
+        <Box sx={{ mb: 2, display: "flex", alignItems: "center" }}>
           <TextField
             label="Lẫy chuyển số trên vô lăng"
             variant="outlined"
@@ -1923,7 +2143,7 @@ const CarDetails = () => {
         </Box>
 
         {/* Kiểm soát gia tốc */}
-        <Box sx={{ mb: 2, display: 'flex', alignItems: 'center' }}>
+        <Box sx={{ mb: 2, display: "flex", alignItems: "center" }}>
           <TextField
             label="Kiểm soát gia tốc"
             variant="outlined"
@@ -1947,7 +2167,7 @@ const CarDetails = () => {
         </Box>
 
         {/* Phanh tay điện tử */}
-        <Box sx={{ mb: 2, display: 'flex', alignItems: 'center' }}>
+        <Box sx={{ mb: 2, display: "flex", alignItems: "center" }}>
           <TextField
             label="Phanh tay điện tử"
             variant="outlined"
@@ -1971,7 +2191,7 @@ const CarDetails = () => {
         </Box>
 
         {/* Giữ phanh tự động */}
-        <Box sx={{ mb: 2, display: 'flex', alignItems: 'center' }}>
+        <Box sx={{ mb: 2, display: "flex", alignItems: "center" }}>
           <TextField
             label="Giữ phanh tự động"
             variant="outlined"
@@ -1995,9 +2215,9 @@ const CarDetails = () => {
         </Box>
 
         <Typography variant="h4" gutterBottom>
-        Thông số kỹ thuật - Công nghệ an toàn
+          Thông số kỹ thuật - Công nghệ an toàn
         </Typography>
-        <Box sx={{ mb: 2, display: 'flex', alignItems: 'center' }}>
+        <Box sx={{ mb: 2, display: "flex", alignItems: "center" }}>
           <TextField
             label="Kiểm soát hành trình"
             variant="outlined"
@@ -2020,7 +2240,7 @@ const CarDetails = () => {
           />
         </Box>
 
-        <Box sx={{ mb: 2, display: 'flex', alignItems: 'center' }}>
+        <Box sx={{ mb: 2, display: "flex", alignItems: "center" }}>
           <TextField
             label="Kiểm soát hành trình thích ứng"
             variant="outlined"
@@ -2043,7 +2263,7 @@ const CarDetails = () => {
           />
         </Box>
 
-        <Box sx={{ mb: 2, display: 'flex', alignItems: 'center' }}>
+        <Box sx={{ mb: 2, display: "flex", alignItems: "center" }}>
           <TextField
             label="Cảnh báo phương tiện cắt ngang khi lùi"
             variant="outlined"
@@ -2066,7 +2286,7 @@ const CarDetails = () => {
           />
         </Box>
 
-        <Box sx={{ mb: 2, display: 'flex', alignItems: 'center' }}>
+        <Box sx={{ mb: 2, display: "flex", alignItems: "center" }}>
           <TextField
             label="Cảnh báo tài xế buồn ngủ"
             variant="outlined"
@@ -2089,7 +2309,7 @@ const CarDetails = () => {
           />
         </Box>
 
-        <Box sx={{ mb: 2, display: 'flex', alignItems: 'center' }}>
+        <Box sx={{ mb: 2, display: "flex", alignItems: "center" }}>
           <TextField
             label="Ghế an toàn cho trẻ em Isofix"
             variant="outlined"
@@ -2112,7 +2332,7 @@ const CarDetails = () => {
           />
         </Box>
 
-        <Box sx={{ mb: 2, display: 'flex', alignItems: 'center' }}>
+        <Box sx={{ mb: 2, display: "flex", alignItems: "center" }}>
           <TextField
             label="Hỗ trợ đổ đèo"
             variant="outlined"
@@ -2135,7 +2355,7 @@ const CarDetails = () => {
           />
         </Box>
 
-        <Box sx={{ mb: 2, display: 'flex', alignItems: 'center' }}>
+        <Box sx={{ mb: 2, display: "flex", alignItems: "center" }}>
           <TextField
             label="Cảnh báo điểm mù"
             variant="outlined"
@@ -2158,7 +2378,7 @@ const CarDetails = () => {
           />
         </Box>
 
-        <Box sx={{ mb: 2, display: 'flex', alignItems: 'center' }}>
+        <Box sx={{ mb: 2, display: "flex", alignItems: "center" }}>
           <TextField
             label="Camera lùi"
             variant="outlined"
@@ -2181,7 +2401,7 @@ const CarDetails = () => {
           />
         </Box>
 
-        <Box sx={{ mb: 2, display: 'flex', alignItems: 'center' }}>
+        <Box sx={{ mb: 2, display: "flex", alignItems: "center" }}>
           <TextField
             label="Camera 360"
             variant="outlined"
@@ -2204,7 +2424,7 @@ const CarDetails = () => {
           />
         </Box>
 
-        <Box sx={{ mb: 2, display: 'flex', alignItems: 'center' }}>
+        <Box sx={{ mb: 2, display: "flex", alignItems: "center" }}>
           <TextField
             label="Camera quan sát làn đường"
             variant="outlined"
@@ -2227,7 +2447,7 @@ const CarDetails = () => {
           />
         </Box>
 
-        <Box sx={{ mb: 2, display: 'flex', alignItems: 'center' }}>
+        <Box sx={{ mb: 2, display: "flex", alignItems: "center" }}>
           <TextField
             label="Cảnh báo lệch làn đường"
             variant="outlined"
@@ -2250,7 +2470,7 @@ const CarDetails = () => {
           />
         </Box>
 
-        <Box sx={{ mb: 2, display: 'flex', alignItems: 'center' }}>
+        <Box sx={{ mb: 2, display: "flex", alignItems: "center" }}>
           <TextField
             label="Hỗ trợ giữ làn"
             variant="outlined"
@@ -2273,7 +2493,7 @@ const CarDetails = () => {
           />
         </Box>
 
-        <Box sx={{ mb: 2, display: 'flex', alignItems: 'center' }}>
+        <Box sx={{ mb: 2, display: "flex", alignItems: "center" }}>
           <TextField
             label="Hỗ trợ phanh tự động giảm thiểu va chạm"
             variant="outlined"
@@ -2296,7 +2516,7 @@ const CarDetails = () => {
           />
         </Box>
 
-        <Box sx={{ mb: 2, display: 'flex', alignItems: 'center' }}>
+        <Box sx={{ mb: 2, display: "flex", alignItems: "center" }}>
           <TextField
             label="Phân phối lực phanh điện tử"
             variant="outlined"
@@ -2319,7 +2539,7 @@ const CarDetails = () => {
           />
         </Box>
 
-        <Box sx={{ mb: 2, display: 'flex', alignItems: 'center' }}>
+        <Box sx={{ mb: 2, display: "flex", alignItems: "center" }}>
           <TextField
             label="Cân bằng điện tử"
             variant="outlined"
@@ -2342,7 +2562,7 @@ const CarDetails = () => {
           />
         </Box>
 
-        <Box sx={{ mb: 2, display: 'flex', alignItems: 'center' }}>
+        <Box sx={{ mb: 2, display: "flex", alignItems: "center" }}>
           <TextField
             label="Kiểm soát lực kéo"
             variant="outlined"
@@ -2365,7 +2585,7 @@ const CarDetails = () => {
           />
         </Box>
 
-        <Box sx={{ mb: 2, display: 'flex', alignItems: 'center' }}>
+        <Box sx={{ mb: 2, display: "flex", alignItems: "center" }}>
           <TextField
             label="Hỗ trợ khởi hành ngang dốc"
             variant="outlined"
@@ -2389,7 +2609,7 @@ const CarDetails = () => {
         </Box>
 
         {/* Số túi khí */}
-        <Box sx={{ mb: 2, display: 'flex', alignItems: 'center' }}>
+        <Box sx={{ mb: 2, display: "flex", alignItems: "center" }}>
           <TextField
             label="Số túi khí"
             variant="outlined"
@@ -2413,7 +2633,7 @@ const CarDetails = () => {
         </Box>
 
         {/* Chống bó cứng phanh */}
-        <Box sx={{ mb: 2, display: 'flex', alignItems: 'center' }}>
+        <Box sx={{ mb: 2, display: "flex", alignItems: "center" }}>
           <TextField
             label="Chống bó cứng phanh"
             variant="outlined"
@@ -2437,7 +2657,7 @@ const CarDetails = () => {
         </Box>
 
         {/* Hỗ trợ lực phanh khẩn cấp */}
-        <Box sx={{ mb: 2, display: 'flex', alignItems: 'center' }}>
+        <Box sx={{ mb: 2, display: "flex", alignItems: "center" }}>
           <TextField
             label="Hỗ trợ lực phanh khẩn cấp"
             variant="outlined"
@@ -2459,7 +2679,6 @@ const CarDetails = () => {
             sx={{ ml: 2 }} // Margin to the left
           />
         </Box>
-
 
         <Button type="submit" variant="contained" color="primary">
           Thêm mới

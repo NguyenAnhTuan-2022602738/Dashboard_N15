@@ -114,6 +114,20 @@ export const createCar = async (formData, images) => {
   }
 };
 
+// Hàm upload file JSON
+export const importCarData = async (jsonData) => {
+  try {
+    const response = await Axios.post(`${API_URL}/createByFileImport`, jsonData, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    return response.data; // Trả về dữ liệu từ API
+  } catch (error) {
+    throw new Error("Có lỗi khi tải lên!");
+  }
+};
+
 /**
  * 
  * @param {*} Api update car 
@@ -138,6 +152,27 @@ export const fetchCarCountBySegment = async () => {
     return response.data; // Trả về dữ liệu từ API
   } catch (error) {
     throw new Error("Failed to fetch car count by segment");
+  }
+};
+
+
+export const fetchPopularCars = async () => {
+  try {
+    const response = await Axios.get(`${API_URL}/popularCars`);
+    return response.data.cars;
+  } catch (error) {
+    throw new Error('Không thể tải dữ liệu xe phổ biến.');
+  }
+};
+
+
+export const fetchmucTieuThuNhienLieu = async () => {
+  try {
+    const response = await Axios.get(`${API_URL}/mucTieuThuNhienLieu`);
+    return response.data; // Trả về dữ liệu từ API
+  } catch (error) {
+    console.error("Error fetching fuel consumption data:", error);
+    throw new Error("Không thể lấy dữ liệu mức tiêu thụ nhiên liệu.");
   }
 };
 

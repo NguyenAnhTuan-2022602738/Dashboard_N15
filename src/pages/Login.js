@@ -1,45 +1,70 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { loginUser } from "../services/authService";
+import { loginUser } from "../services/authService"; // Hàm gọi API đăng nhập
 import "../styles/login.css";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false); // Trạng thái tải
   const navigate = useNavigate();
 
   const handleLogin = async (e) => {
     e.preventDefault();
+    setLoading(true); // Hiển thị trạng thái tải
+    setError(""); // Xóa lỗi cũ
+
     try {
+      // Gọi API loginUser với email và password
       const response = await loginUser({ email, password });
 
-      // Check the response from API
       if (response.code === 200) {
-        console.log("Login successful", response);
-        // Show success alert
-        alert("Đăng nhập thành công!");
-        // Redirect to dashboard after successful login
-        navigate("/dashboard");
+        // Kiểm tra nếu response có token và lưu vào localStorage
+        if (response.token) {
+          // Lưu token vào localStorage
+          localStorage.setItem("token", response.token);
+
+          // Lưu thông tin người dùng
+          localStorage.setItem(
+            "user",
+            JSON.stringify({ fullname: response.fullname, email: response.email })
+          );
+
+          alert("Đăng nhập thành công!");
+
+          // Điều hướng đến trang dashboard
+          navigate("/admin/dashboard");
+        } else {
+          setError("Token không hợp lệ.");
+        }
       } else {
-        setError(response.message || "Đăng nhập thất bại");
+        // Nếu đăng nhập không thành công, hiển thị thông báo lỗi
+        setError(response.message || "Đăng nhập thất bại!");
       }
     } catch (error) {
-      setError(error.message || "Đăng nhập thất bại");
-      console.error("Login failed", error);
+      // Xử lý lỗi khi gọi API
+      setError(error.response?.data?.message || "Có lỗi xảy ra trong quá trình đăng nhập.");
+      console.error("Login failed:", error);
+    } finally {
+      // Tắt trạng thái tải
+      setLoading(false);
     }
   };
 
   const handleForgotPassword = () => {
-    // Redirect to forgot password page (you can add your route if needed)
-    navigate("/password/forgot");
+    navigate("/password/forgot"); // Điều hướng tới trang quên mật khẩu
   };
 
   return (
     <div className="container">
       <div className="login-container">
         <h2>Đăng nhập</h2>
+        
+        {/* Hiển thị thông báo lỗi nếu có */}
         {error && <p className="error-message">{error}</p>}
+        
+        {/* Form đăng nhập */}
         <form onSubmit={handleLogin}>
           <input
             type="email"
@@ -55,8 +80,13 @@ const Login = () => {
             onChange={(e) => setPassword(e.target.value)}
             required
           />
-          <button type="submit">Đăng nhập</button>
+          
+          {/* Nút đăng nhập với trạng thái tải */}
+          <button type="submit" disabled={loading}>
+            {loading ? "Đang xử lý..." : "Đăng nhập"}
+          </button>
         </form>
+
         <p>
           Chưa có tài khoản?{" "}
           <span
