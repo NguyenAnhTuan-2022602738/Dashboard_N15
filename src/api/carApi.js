@@ -49,10 +49,11 @@ export const deleteCar = async (id) => {
 
 export const bulkDeleteCars = async (ids) => {
   try {
-    await Axios.patch(`${API_URL}/change_multi`, {
+    const respone = await Axios.patch(`${API_URL}/change_multi`, {
       ids,
       type: "delete-multi",
     });
+    return respone.data;
   } catch (error) {
     throw new Error("Failed to delete selected cars");
   }
@@ -60,10 +61,11 @@ export const bulkDeleteCars = async (ids) => {
 
 export const UndobulkDeleteCars = async (ids) => {
   try {
-    await Axios.patch(`${API_URL}/change_multi`, {
+    const respone = await Axios.patch(`${API_URL}/change_multi`, {
       ids,
       type: "undoDelete-multi",
     });
+    return respone.data;
   } catch (error) {
     throw new Error("Failed to delete selected cars");
   }

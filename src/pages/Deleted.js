@@ -140,17 +140,22 @@ const Deleted = () => {
   };
 
 
-  const handUndoleBulkDelete = async () => {
+  const handleUndoBulkDeleted = async () => {
     if (
       selectedCars.length > 0 &&
-      window.confirm("Are you sure you want to delete selected cars?")
+      window.confirm("Bạn có muốn khôi phục các xe được chọn không?")
     ) {
       try {
-        await UndobulkDeleteCars(selectedCars);
+        const result = await UndobulkDeleteCars(selectedCars);
+        if(result.code === 200) {
+          alert(result.message);
+        } else {
+          alert("Khôi phục xe thất bại.");
+        }
         setCars(cars.filter((car) => !selectedCars.includes(car._id)));
         setSelectedCars([]);
       } catch (err) {
-        setError("Failed to delete selected cars.");
+        setError("Failed to restore selected cars.");
       }
     }
   };
@@ -236,10 +241,10 @@ const Deleted = () => {
                   <Button
                     variant="contained"
                     color="secondary"
-                    onClick={handUndoleBulkDelete}
+                    onClick={handleUndoBulkDeleted}
                     style={{ marginLeft: "10px" }}
                   >
-                    Khôi phục những xe đã chọn
+                    Restore ALL
                   </Button>
                 )}
               </div>

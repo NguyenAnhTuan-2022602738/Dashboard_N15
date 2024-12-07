@@ -128,7 +128,12 @@ const CarManagement = () => {
       window.confirm("Are you sure you want to delete selected cars?")
     ) {
       try {
-        await bulkDeleteCars(selectedCars);
+        const result = await bulkDeleteCars(selectedCars);
+        if(result.code === 200) {
+          alert(result.message);
+        } else {
+          alert("Khôi phục xe thất bại.");
+        }
         setCars(cars.filter((car) => !selectedCars.includes(car._id)));
         setSelectedCars([]);
       } catch (err) {
