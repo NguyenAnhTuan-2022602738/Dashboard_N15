@@ -115,6 +115,19 @@ export const createCar = async (formData, images) => {
 };
 
 // Hàm upload file JSON
+// export const importCarData = async (jsonData) => {
+//   try {
+//     const response = await Axios.post(`${API_URL}/createByFileImport`, jsonData, {
+//       headers: {
+//         "Content-Type": "application/json",
+//       },
+//     });
+//     return response.data; // Trả về dữ liệu từ API
+//   } catch (error) {
+//     throw new Error("Có lỗi khi tải lên!");
+//   }
+// };
+// Hàm upload file JSON
 export const importCarData = async (jsonData) => {
   try {
     const response = await Axios.post(`${API_URL}/createByFileImport`, jsonData, {
@@ -122,11 +135,26 @@ export const importCarData = async (jsonData) => {
         "Content-Type": "application/json",
       },
     });
-    return response.data; // Trả về dữ liệu từ API
+
+    // Kiểm tra nếu có trùng lặp trong kết quả trả về
+    const { results } = response.data;
+    
+    // Lọc và xử lý kết quả trùng lặp
+    const duplicates = results.filter(result => result.status === "duplicate");
+    if (duplicates.length > 0) {
+      // Nếu có sản phẩm trùng, bạn có thể hiển thị thông báo hoặc xử lý theo yêu cầu
+      console.log("Có sản phẩm trùng lặp:", duplicates.map(d => d.message).join(", "));
+    }
+
+    // Trả về dữ liệu từ API
+    return response.data; 
+
   } catch (error) {
+    console.error("Có lỗi khi tải lên:", error);
     throw new Error("Có lỗi khi tải lên!");
   }
 };
+
 
 /**
  * 

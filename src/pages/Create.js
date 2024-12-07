@@ -260,21 +260,50 @@ const CarDetails = () => {
     }
   };
 
+  // const handleFileSubmit = async () => {
+  //   try {
+  //     const result = await importCarData(jsonData);
+  //     if (result.code === 200) {
+  //       setSuccess("Import file thành công!");
+  //       setError(null);
+  //     } else {
+  //       setError(result.message);
+  //       setSuccess(null);
+  //     }
+  //   } catch (error) {
+  //     setError(error.message);
+  //     setSuccess(null);
+  //   }
+  // };
   const handleFileSubmit = async () => {
     try {
       const result = await importCarData(jsonData);
+  
+      // Kiểm tra mã lỗi từ API, nếu mã lỗi là 200 thì import thành công
       if (result.code === 200) {
-        setSuccess("Import file thành công!");
-        setError(null);
+        // Kiểm tra xem có sản phẩm trùng lặp không
+        const duplicates = result.results.filter((item) => item.status === 'duplicate');
+        if (duplicates.length > 0) {
+          // Nếu có trùng lặp, thông báo cho người dùng
+          setError("Có sản phẩm trùng lặp: " + duplicates.map(d => d.message).join(", "));
+          setSuccess(null);
+        } else {
+          // Nếu không có trùng lặp, thông báo thành công
+          setSuccess("Import file thành công!");
+          setError(null);
+        }
       } else {
+        // Nếu API trả về mã lỗi khác, thông báo lỗi chung
         setError(result.message);
         setSuccess(null);
       }
     } catch (error) {
+      // Xử lý lỗi nếu có lỗi khi tải file
       setError(error.message);
       setSuccess(null);
     }
   };
+  
 
   const handleFileUpload = (e) => {
     const file = e.target.files[0];
@@ -455,13 +484,23 @@ const CarDetails = () => {
               {jsonData.length > 0 && (
                 <div>
                   <Typography variant="body1">Xem trước dữ liệu:</Typography>
-                  <ul>
-                    {jsonData.map((car, index) => (
-                      <li key={index}>
-                        {car.name} - {car.brand}
-                      </li>
-                    ))}
-                  </ul>
+                  <div
+                    style={{
+                      maxHeight: "200px", // Giới hạn chiều cao
+                      overflowY: "auto", // Kích hoạt cuộn dọc
+                      marginTop: "10px",
+                      border: "1px solid #ccc", // Để phân biệt khu vực cuộn
+                      padding: "5px",
+                    }}
+                  >
+                    <ul>
+                      {jsonData.map((car, index) => (
+                        <li key={index}>
+                          {car.brand} - {car.name} - {car.version}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
                 </div>
               )}
               <Button
