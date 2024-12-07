@@ -27,6 +27,7 @@ import {
   bulkDeleteCars,
   getCarDetail,
   undoDeleteCar,
+  UndobulkDeleteCars,
 } from "../api/carApi";
 
 const Deleted = () => {
@@ -138,6 +139,22 @@ const Deleted = () => {
     }
   };
 
+
+  const handUndoleBulkDelete = async () => {
+    if (
+      selectedCars.length > 0 &&
+      window.confirm("Are you sure you want to delete selected cars?")
+    ) {
+      try {
+        await UndobulkDeleteCars(selectedCars);
+        setCars(cars.filter((car) => !selectedCars.includes(car._id)));
+        setSelectedCars([]);
+      } catch (err) {
+        setError("Failed to delete selected cars.");
+      }
+    }
+  };
+
   const handleUndoDelete = async (id) => {
     if (window.confirm("Bạn có chắc chắn muốn khôi phục lại chiếc xe này?")) {
       try {
@@ -219,10 +236,10 @@ const Deleted = () => {
                   <Button
                     variant="contained"
                     color="secondary"
-                    onClick={handleBulkDelete}
+                    onClick={handUndoleBulkDelete}
                     style={{ marginLeft: "10px" }}
                   >
-                    Xóa đã chọn
+                    Khôi phục những xe đã chọn
                   </Button>
                 )}
               </div>
