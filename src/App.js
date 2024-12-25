@@ -97,7 +97,7 @@ const App = () => {
         <Route path="/user-profile" element={<UserProfile />} /> 
 
         {/* Redirect default */}
-        <Route path="/" element={<Navigate to="/login" />} />
+        <Route path="/" element={<Navigate to="/admin/dashboard" />} />
       </Routes>
     </Router>
   );
