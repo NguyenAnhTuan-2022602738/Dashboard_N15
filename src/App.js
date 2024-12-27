@@ -10,7 +10,6 @@ import ForgotPassword from './pages/ForgotPassword';
 import CreateCar from './pages/Create';
 import EditCar from './pages/Edit';
 import Deleted from './pages/Deleted';
-import ProtectedRoute from './components/ProtectedRoute';
 import UserProfile from './components/UserProfile';
 
 const App = () => {
@@ -47,51 +46,51 @@ const App = () => {
         <Route
           path="/admin/dashboard"
           element={
-            <ProtectedRoute>
+            < >
               <DefaultLayout>
                 <Dashboard />
               </DefaultLayout>
-            </ProtectedRoute>
+            </ >
           }
         />
         <Route
           path="/admin/car_items"
           element={
-            <ProtectedRoute>
+            < >
               <DefaultLayout>
                 <CarManagement />
               </DefaultLayout>
-            </ProtectedRoute>
+            </ >
           }
         />
         <Route
           path="/admin/car_items/create"
           element={
-            <ProtectedRoute>
+            < >
               <DefaultLayout>
                 <CreateCar />
               </DefaultLayout>
-            </ProtectedRoute>
+            </ >
           }
         />
         <Route
           path="/admin/car_items/edit/:id"
           element={
-            <ProtectedRoute>
+            < >
               <DefaultLayout>
                 <EditCar />
               </DefaultLayout>
-            </ProtectedRoute>
+            </ >
           }
         />
         <Route
           path="/admin/car_items/deleted"
           element={
-            <ProtectedRoute>
+            < >
               <DefaultLayout>
                 <Deleted />
               </DefaultLayout>
-            </ProtectedRoute>
+            </ >
           }
         />
         <Route path="/user-profile" element={<UserProfile />} /> 

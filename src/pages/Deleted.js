@@ -224,7 +224,7 @@ const Deleted = () => {
           <h2>Danh sách xe</h2>
         </div>
         <div className="card-body">
-          {/* Bộ lọc và xóa đã chọn */}
+          {/* Bộ lọc và khôi phục, xóa đã chọn */}
           <div className="mb-3">
             <div class="row">
               <div class="col-3">

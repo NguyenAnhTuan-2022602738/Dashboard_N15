@@ -128,19 +128,6 @@ export const createCar = async (formData, images) => {
 };
 
 // Hàm upload file JSON
-// export const importCarData = async (jsonData) => {
-//   try {
-//     const response = await Axios.post(`${API_URL}/createByFileImport`, jsonData, {
-//       headers: {
-//         "Content-Type": "application/json",
-//       },
-//     });
-//     return response.data; // Trả về dữ liệu từ API
-//   } catch (error) {
-//     throw new Error("Có lỗi khi tải lên!");
-//   }
-// };
-// Hàm upload file JSON
 export const importCarData = async (jsonData) => {
   try {
     const response = await Axios.post(`${API_URL}/createByFileImport`, jsonData, {
@@ -195,6 +182,16 @@ export const fetchCarCountBySegment = async () => {
     throw new Error("Failed to fetch car count by segment");
   }
 };
+
+export const fetchCarCountByBrand = async () => {
+  try {
+    const response = await Axios.get(`${API_URL}/countByBrand`);
+    return response.data; // Trả về dữ liệu từ API
+  } catch (error) {
+    throw new Error("Failed to fetch car count by segment");
+  }
+};
+
 
 
 export const fetchPopularCars = async () => {

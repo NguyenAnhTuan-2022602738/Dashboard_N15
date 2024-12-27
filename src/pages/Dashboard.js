@@ -25,11 +25,13 @@ import {
   Tooltip,
   AreaChart,
   Area,
+  Cell
 } from "recharts";
 import {
   fetchCarCountBySegment,
   fetchPopularCars,
   fetchmucTieuThuNhienLieu,
+  fetchCarCountByBrand,
 } from "../api/carApi";
 
 const colors = ["#FF6F61", "#4CAF50", "#2196F3", "#FFEB3B", "#9C27B0"];
@@ -40,16 +42,19 @@ const Dashboard = () => {
   const [mucTieuThuNhienLieuData, setmucTieuThuNhienLieuData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [brandData, setbrandData] = useState([]);
 
   useEffect(() => {
     const loadData = async () => {
       try {
-        const [segmentData, popularData] = await Promise.all([
+        const [segmentData, popularData, brandData] = await Promise.all([
           fetchCarCountBySegment(),
           fetchPopularCars(),
+          fetchCarCountByBrand(),
         ]);
         setCarData(segmentData);
         setPopularCars(popularData);
+        setbrandData(brandData);
       } catch (error) {
         setError("Không thể tải dữ liệu.");
       } finally {
@@ -79,17 +84,26 @@ const Dashboard = () => {
     return Math.sqrt(count) * 10; // Tăng kích thước bong bóng theo căn bậc hai của số lượng
   };
 
-
   const CustomTooltip = ({ active, payload, label }) => {
     if (active && payload && payload.length) {
       return (
-        <div className="custom-tooltip" style={{ backgroundColor: '#F9F9F9', padding: '5px', border: '1px solid #ccc' }}>
+        <div
+          className="custom-tooltip"
+          style={{
+            backgroundColor: "#F9F9F9",
+            padding: "5px",
+            border: "1px solid #ccc",
+          }}
+        >
           <p className="label">{`${label}`}</p>
-          <p style={{ color: '#00B1F7'}} className="intro">{`Mức tiêu thụ: ${payload[0].value}L`}</p>
+          <p
+            style={{ color: "#00B1F7" }}
+            className="intro"
+          >{`Mức tiêu thụ: ${payload[0].value}L`}</p>
         </div>
       );
     }
-  
+
     return null;
   };
   if (loading) {
@@ -129,38 +143,54 @@ const Dashboard = () => {
       </Typography>
 
       <Grid container spacing={4}>
-        {/* Bubble Chart */}
+      
         <Grid item xs={12} md={6}>
           <Paper elevation={3} sx={{ ...styles.paper }}>
             <Typography variant="h6" sx={{ ...styles.chartTitle }}>
-              <strong>Số lượng xe theo phân khúc (Bubble Chart)</strong>
+              <strong>Số lượng xe theo hãng</strong>
             </Typography>
             <ResponsiveContainer width="100%" height={300}>
-              <ScatterChart>
-                <CartesianGrid strokeDasharray="3 3" />
+              <BarChart data={brandData}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#f5f5f5" />
                 <XAxis
-                  type="category"
-                  dataKey="vehicle_segment"
-                  name="Phân khúc"
+                  dataKey="brand"
+                  tick={{ fill: "#666", fontSize: 12 }}
+                  axisLine={{ stroke: "#ccc" }}
                 />
-                <YAxis type="number" dataKey="count" name="Số lượng xe" />
-                <BubbleTooltip
-                  cursor={{ strokeDasharray: "3 3" }}
-                  formatter={(value, name, props) =>
-                    `${props.payload.vehicle_segment}: ${value} xe`
-                  }
+                <YAxis
+                  tick={{ fill: "#666", fontSize: 12 }}
+                  axisLine={{ stroke: "#ccc" }}
                 />
-                <Scatter
-                  name="Xe"
-                  data={carData.map((d, i) => ({
-                    ...d,
-                    size: calculateBubbleSize(d.count),
-                    fill: colors[i % colors.length],
-                  }))}
+                <Tooltip
+                  contentStyle={{
+                    backgroundColor: "rgba(255, 255, 255, 0.8)",
+                    border: "none",
+                    borderRadius: "4px",
+                    boxShadow: "0 2px 5px rgba(0,0,0,0.1)",
+                  }}
+                />
+                <Legend
+                  wrapperStyle={{
+                    paddingTop: "10px",
+                  }}
+                />
+                <defs>
+                  <linearGradient id="colorCount" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#8884d8" stopOpacity={0.8} />
+                    <stop offset="95%" stopColor="#8884d8" stopOpacity={0.2} />
+                  </linearGradient>
+                </defs>
+                <Bar
                   dataKey="count"
-                  shape="circle"
-                />
-              </ScatterChart>
+                  fill="url(#colorCount)"
+                  radius={[4, 4, 0, 0]}
+                  maxBarSize={50}
+                >
+                  {brandData.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={`url(#colorCount)`} />
+                  ))}
+                </Bar>
+              </BarChart>
             </ResponsiveContainer>
           </Paper>
         </Grid>
@@ -168,7 +198,7 @@ const Dashboard = () => {
         <Grid item xs={12} md={6}>
           <Paper elevation={3} sx={{ ...styles.paper }}>
             <Typography variant="h6" sx={{ ...styles.chartTitle }}>
-              <strong>Biểu đồ đường - Số lượng xe theo phân khúc</strong>
+              <strong>Số lượng xe theo phân khúc</strong>
             </Typography>
             <ResponsiveContainer width="100%" height={300}>
               <LineChart data={carData}>
@@ -182,6 +212,61 @@ const Dashboard = () => {
             </ResponsiveContainer>
           </Paper>
         </Grid>
+
+
+        <Grid item xs={12}>
+          <Paper elevation={3} sx={{ ...styles.paper }}>
+            <Typography variant="h6" sx={{ ...styles.chartTitle }}>
+              <strong>Mức tiêu thụ nhiên liệu</strong>
+            </Typography>
+            <ResponsiveContainer width="100%" height={300}>
+              <AreaChart
+                data={mucTieuThuNhienLieuData
+                  .filter(
+                    (item) =>
+                      item.mucTieuThuNhienLieu != null &&
+                      item.mucTieuThuNhienLieu !== ""
+                  )
+                  .map((item) => ({
+                    ...item,
+                    mucTieuThuNhienLieu:
+                      typeof item.mucTieuThuNhienLieu === "string"
+                        ? parseFloat(item.mucTieuThuNhienLieu.replace(",", "."))
+                        : item.mucTieuThuNhienLieu,
+                  }))
+                  .sort((a, b) => a.mucTieuThuNhienLieu - b.mucTieuThuNhienLieu)
+                  .slice(0, 10)}
+              >
+                <defs>
+                  <linearGradient
+                    id="colorGradient"
+                    x1="0"
+                    y1="0"
+                    x2="0"
+                    y2="1"
+                  >
+                    <stop offset="5%" stopColor="#00B1F7" stopOpacity={0.8} />
+                    <stop offset="95%" stopColor="#00B1F7" stopOpacity={0.1} />
+                  </linearGradient>
+                </defs>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="name" />
+                <YAxis />
+                <Tooltip content={<CustomTooltip />} />
+                <Area
+                  type="monotone"
+                  dataKey="mucTieuThuNhienLieu"
+                  stroke="#00B1F7"
+                  fill="url(#colorGradient)"
+                />
+              </AreaChart>
+            </ResponsiveContainer>
+          </Paper>
+        </Grid>
+
+
+
+
         {/* Line Chart and Popular Cars on the same row */}
         <Grid item xs={12} md={6}>
           <Paper elevation={3} sx={{ ...styles.paper }}>
@@ -300,55 +385,7 @@ const Dashboard = () => {
             </ul>
           </Paper>
         </Grid>
-        <Grid item xs={12}>
-          <Paper elevation={3} sx={{ ...styles.paper }}>
-            <Typography variant="h6" sx={{ ...styles.chartTitle }}>
-              <strong>Mức tiêu thụ nhiên liệu</strong>
-            </Typography>
-            <ResponsiveContainer width="100%" height={300}>
-              <AreaChart
-                data={mucTieuThuNhienLieuData
-                  .filter(
-                    (item) =>
-                      item.mucTieuThuNhienLieu != null &&
-                      item.mucTieuThuNhienLieu !== ""
-                  )
-                  .map((item) => ({
-                    ...item,
-                    mucTieuThuNhienLieu:
-                      typeof item.mucTieuThuNhienLieu === "string"
-                        ? parseFloat(item.mucTieuThuNhienLieu.replace(",", "."))
-                        : item.mucTieuThuNhienLieu,
-                  }))
-                  .sort((a, b) => a.mucTieuThuNhienLieu - b.mucTieuThuNhienLieu)
-                  .slice(0, 10)}
-              >
-                <defs>
-                  <linearGradient
-                    id="colorGradient"
-                    x1="0"
-                    y1="0"
-                    x2="0"
-                    y2="1"
-                  >
-                    <stop offset="5%" stopColor="#00B1F7" stopOpacity={0.8} />
-                    <stop offset="95%" stopColor="#00B1F7" stopOpacity={0.1} />
-                  </linearGradient>
-                </defs>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="name" />
-                <YAxis />
-                <Tooltip content={<CustomTooltip />} />
-                <Area
-                  type="monotone"
-                  dataKey="mucTieuThuNhienLieu"
-                  stroke="#00B1F7"
-                  fill="url(#colorGradient)"
-                />
-              </AreaChart>
-            </ResponsiveContainer>
-          </Paper>
-        </Grid>
+        
       </Grid>
     </Container>
   );
